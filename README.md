@@ -1,4 +1,11 @@
 # A Fork from Sebastian's PhaseMapping Code
+## Todos
+- [ ] Define Node struct
+- [ ] Proper test script for BFS
+- [ ] Breadth-first-search
+- [ ] Depth-first-search (low priority)
+- [ ] Math model for probabilistic estimation
+
 
 Development log
 ## 5/29
