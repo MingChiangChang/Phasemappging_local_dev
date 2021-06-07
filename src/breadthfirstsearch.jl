@@ -14,6 +14,7 @@ struct Node{T, CP<:AbstractVector{<:Phase{T}},
 	x::XT
 	r::RT
     level::LT
+
 	# prior normal distributions
 	noise_std::NS # standard deviation of the noise
 	prior_mean::PV # prior mean for a, α, σ
@@ -38,8 +39,18 @@ function Node(phases::AbstractVector{<:Phase}, x::AbstractVector,
 	    prior_mean, prior_std, tol)
 end
 
-
-
 function bfs!(node::Node, x, y, depth::Int; tol=1e-3)
-    if BFS.
+    child_nodes = Array{Node}[]
+	for p in node.next_phases
+        new_current_phases = deepcopy(node.current_phases)
+		append!(new_current_phases, p)
+		# Create array of child nodes
+		append!(child_nodes, Node())
+		# pmp on Node (need to implement pmp that takes Node)
+
+		# evaluate stopping condition, label
+
+	end
 end
+
+# Base.min(nodes::Vector{Node}) = min.(norm(nodes.r))
