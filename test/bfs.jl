@@ -6,19 +6,16 @@ using PhaseMapping: bfs
 
 using Plots
 
-@testset "bfs" begin
-    # Load sticks and fake data
-    sticks = loadsticks()
-    data = loaddata()
 
-    # Default Priors
+# Load sticks and fake data
+sticks = loadsticks()
+data = loaddata()
 
-    profile = Gauss()
-    phases = Vector{typeof(Phase(Sticks[1], profile = profile))}(undef, nsticks)
-    empty_phases = Vector{typeof(Phase(Sticks[1], profile = profile))}[]
+# Default Priors
 
-
-    bfs(empty_phases, phases, data) # default rpior
+profile = Gauss()
+phases = Vector{typeof(Phase(Sticks[1], profile = profile))}(undef, nsticks)
+empty_phases = Vector{typeof(Phase(Sticks[1], profile = profile))}[]
 
 
-    # bfs
+bfs(empty_phases, phases, data)
