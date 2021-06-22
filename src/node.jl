@@ -28,5 +28,11 @@ end
 function Node(phases::AbstractVector{<:Phase}, x::AbstractVector,
 	         y::AbstractVector, level::Int)
     current_phases = Array{Phase}[]
-	Node(current_phases, phases, x, y, 0)
+	Node(current_phases, phases, x, y, 0, [], )
+end
+
+
+function fit!(node::Node)
+	#
+
 end
