@@ -4,35 +4,30 @@ struct Node{T, CP<:AbstractVector{<:Phase{T}},
 	        NP<:AbstractVector{<:Phase{T}},
 			AS<:Bool, XT<:AbstractVecOrMat, RT<:AbstractVecOrMat, LT<:Int,
 			AT<:AbstractVecOrMat, N, CN<:AbstractVector}
-
 	current_phases::CP
-	next_phases::NP
-	# patterns::PT
-	isactive::AS
 
-	x::XT
-	r::RT
-    level::LT
-
-    parent_node::N
-	child_nodes::CN
-	# Parameter for stopping
-	# 1. Low residual (good stop)
-	# 2. To many extra peaks (bad stop/killed)
-	#    Condition: norm(max.(fitted-data)./data) ?
-	#    Or is there anything better than 2 norm
-	# tol::NS
+	#node_id::LT
 end
 
-# Constructing root
-function Node(phases::AbstractVector{<:Phase}, x::AbstractVector,
-	         y::AbstractVector, level::Int)
+function Node(phases::AbstractVector{<:Phase})
     current_phases = Array{Phase}[]
-	Node(current_phases, phases, x, y, 0, [], )
+	Node(current_phases, phases, x, y, 0, 0, [], )
 end
 
-
-function fit!(node::Node)
-	#
-
+function isChild(parent::Node, child::Node)
+    issubset([p.id for p in parent.current_phase],
+	         [p.id for p in child.current_phase])
 end
+
+function fit!(node::Node, x::AbstractVector, y::AbstractVector,
+	          std_noise::Real, mean::AbstractVector, std::AbstractVector,
+			  maxiter=32, regularization::Bool=true)
+    optimized_phases, residuals = fit_phases!(node.current_phases, x, y,
+	                                          std_noise, mean, std,
+	                                          maxiter=maxiter,
+											  regularization=regularization)
+	Node(optimized_phases, node.next_phases, x, residuals, node.node_id, node.level,
+	     node.parent_node, node.child_nodes)
+end
+
+level(node::Node) = size(node.current_phases)

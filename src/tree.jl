@@ -3,8 +3,8 @@
 # 2. To many extra peaks (bad stop/killed)
 #    Condition: norm(max.(fitted-data)./data) ?
 #    Or is there anything better than 2 norm
-struct Tree{T, CP<:AbstractVector{<:Node}, DP<:Int,
-	         NS<:Real, PV<:AbstractVector{T}}
+struct Tree{T, CP<:AbstractVector{T}, DP<:Int,
+	         NS<:Real, PV<:AbstractVector}
     nodes::CP
     depth::DP
 
@@ -17,10 +17,14 @@ end
 function Tree(phases::AbstractVector{Phase}, depth::Int, noise_std::Real=.1,
 	          prior_mean = [1., 1., .2], prior_std = [3., .1, .5])
     # Construct tree with certain depth
-    nodes = Node[]
-
+	nodes = Node[]
+    for level in 1:depth
+		comb = combinations(phases, level)
+		for p in comb
+			append!(nodes, Node(comb))
+		end
+    end
 end
-
 
 function bft(t::Tree)
     # Breadth-first traversal, return an array of

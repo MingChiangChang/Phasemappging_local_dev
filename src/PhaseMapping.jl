@@ -9,6 +9,7 @@ const AbstractMatOrFac{T} = Union{AbstractMatrix{T}, Factorization{T}}
 using StatsBase: mean, std, sample
 # file io
 using DelimitedFiles
+using Combinatorics
 using HDF5
 
 # optimization
