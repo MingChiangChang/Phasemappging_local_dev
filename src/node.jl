@@ -1,22 +1,22 @@
 # Do breadth-first-search
 # Recursive?
-struct Node{T, CP<:AbstractVector{<:Phase{T}},
-	        NP<:AbstractVector{<:Phase{T}},
-			AS<:Bool, XT<:AbstractVecOrMat, RT<:AbstractVecOrMat, LT<:Int,
-			AT<:AbstractVecOrMat, N, CN<:AbstractVector}
+struct Node{T, CP<:AbstractVector{T}, CN<:AbstractVector}
 	current_phases::CP
-
-	#node_id::LT
+	child_node::CN
 end
 
-function Node(phases::AbstractVector{<:Phase})
-    current_phases = Array{Phase}[]
-	Node(current_phases, phases, x, y, 0, 0, [], )
+Node() = Node(Phase[], Node[]) # Root
+Node(phases::AbstractVector{<:Phase}) = Node(phases, Node[])
+
+function is_immidiate_child(parent::Node, child::Node)
+	println([p.id for p in parent.current_phases], [p.id for p in child.current_phases])
+    return (issubset([p.id for p in parent.current_phases],
+	         [p.id for p in child.current_phases]) &&
+			  (get_level(parent)[1]-get_level(child)[1] == -1))
 end
 
-function isChild(parent::Node, child::Node)
-    issubset([p.id for p in parent.current_phase],
-	         [p.id for p in child.current_phase])
+function add_child!(parent::Node, child::Node)
+    push!(parent.child_node, child)
 end
 
 function fit!(node::Node, x::AbstractVector, y::AbstractVector,
@@ -30,4 +30,10 @@ function fit!(node::Node, x::AbstractVector, y::AbstractVector,
 	     node.parent_node, node.child_nodes)
 end
 
-level(node::Node) = size(node.current_phases)
+get_level(node::Node) = size(node.current_phases)[1]
+get_phase_ids(node::Node) = [p.id for p in node.current_phases]
+#Base.:(==)(a::Node, b::Node)
+
+function get_nodes_at_level(nodes::AbstractVector{<:Node}, level::Int)
+    return [n for n in nodes if get_level(n)==level]
+end
