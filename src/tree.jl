@@ -6,11 +6,6 @@
 struct Tree{T, CP<:AbstractVector{T}, DP<:Int}
     nodes::CP
     depth::DP # Store for convenience
-
-    # Prior as global in trees
-    # noise_std::NS # standard deviation of the noise
-	# prior_mean::PV # prior mean for a, α, σ
-	# prior_std::PV # prior std for a, α, σ
 end
 
 function Tree(phases::AbstractVector{<:Phase}, depth::Int)
@@ -18,19 +13,14 @@ function Tree(phases::AbstractVector{<:Phase}, depth::Int)
     nodes = Node[]
 	root = Node()
 	push!(nodes, root)
-	println(nodes, get_level(nodes[1]))
     for d in 1:depth
-		println(d)
 		phase_combs = combinations(phases, d)
 		nodes_at_level = get_nodes_at_level(nodes, d-1)
 		#println(size(nodes_at_level))
 		for phases in phase_combs
 			new_node = Node(phases)
-			println([p.id for p in new_node.current_phases])
 			for old_node in nodes_at_level
-			    print([p.id for p in old_node.current_phases])
 			    if is_immidiate_child(old_node, new_node)
-				    println("True!!")
 				    add_child!(old_node, new_node)
 				    push!(nodes, new_node)
 					break
@@ -40,6 +30,8 @@ function Tree(phases::AbstractVector{<:Phase}, depth::Int)
     end
 	Tree(nodes, depth)
 end
+
+Base.size(t::Tree) = size(t.nodes)
 
 function bft(t::Tree)
     # Breadth-first traversal, return an array of
@@ -60,12 +52,40 @@ function dft(t::Tree)
 	# the D-F order
 end
 
-
-function search(t::Tree, traversal_func::Function)
-    order = traversal_func(t)
-	for node in order
-        fit!(node)
+function search(t::Tree, traversal_func::Function, x::AbstractVector,
+	          y::AbstractVector, std_noise::Real, mean::AbstractVector,
+			  std::AbstractVector, maxiter=32, regularization::Bool=true,
+			  tol::Real=1e-3)
+    node_order = traversal_func(t)
+	while !isempty(node_order)
+	    node = popfirst!(node_order)
+        phases = optimize!(node.current_phases, x, y, std_noise, mean, std,
+		                maxiter, regularization)
+		if not_tolerable(phases, x, y)
+            remove_child(node_order, node)
+		end
     end
 end
 
-Base.size(t::Tree) = size(t.nodes)
+function remove_child!(nv::AbstractVector{<:Node}, parent_node::Node)
+    # Given a vector of node and a node, remove
+	# all the node that are child of the node
+	# TODO Should remove there relationship as well??
+	# TODO Will GC take care?
+    for (idx, node) in nv
+		if is_child(parnet_node, node)
+			deleteat!(nv, idx)
+		end
+	end
+end
+
+function not_tolerable(phases::AbstractVector{<:Phase},
+	                   x::AbstractVector, y::AbstractVector, tol::Real)
+	# Only count extra peaks that showed up in reconstruction
+    recon = zeros(size(x))
+	for phase in phases
+		recon += (phase)(x)
+	end
+	residual = norm(max.(recon-y, 0))
+	return residual > tol
+end

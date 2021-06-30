@@ -18,4 +18,13 @@
 * Minor bug fix
 * test script ready
 
-### 6/4
+### 6/29
+* Settled Node structure
+* Settled Tree structure
+* Tree constructor implemented
+* Breadth-first-traversal done
+
+### 6/30
+* Implement Breadth-first-search
+* Write test
+* Termination condition??

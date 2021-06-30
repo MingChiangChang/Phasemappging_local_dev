@@ -10,4 +10,4 @@ node2 = Node([phases[1] ,phases[2]], [])
 
 add_child!(root, node1)
 add_child!(node1, node2)
-print(is_immidiate_child(node1, node2))
+@test is_immidiate_child(node1, node2)

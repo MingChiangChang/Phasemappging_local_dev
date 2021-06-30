@@ -80,12 +80,14 @@ function pmp!(phases::AbstractVector{<:Phase}, x, y, k::Int, noise_std::Real = .
 	pmp!(P, x, y, k, tol = tol)
 	P.active_phases
 end
+
 function pmp!(P::PMP, x, y, k::Int; tol = 1e-3)
 	for i in 1:k
 		update!(P, x, y, tol = tol) || break
 	end
 	return P
 end
+
 # local phase matching pursuit (for ith spectrogram)
 # here, k is maximal sparsity level per spectrogram
 # this could be modeled as a subspace pursuit algorithm
