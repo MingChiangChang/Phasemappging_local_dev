@@ -14,11 +14,10 @@ end
 
 function is_child(parent::Node, child::Node)
 	return issubset([p.id for p in parent.current_phases],
-	                [p.id for p in child.current_phases])
+	               [p.id for p in child.current_phases])
 end
 
 function is_immidiate_child(parent::Node, child::Node)
-	println([p.id for p in parent.current_phases], [p.id for p in child.current_phases])
     return (issubset([p.id for p in parent.current_phases],
 	         [p.id for p in child.current_phases]) &&
 			  (get_level(parent)[1]-get_level(child)[1] == -1))

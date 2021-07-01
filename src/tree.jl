@@ -72,11 +72,13 @@ function remove_child!(nv::AbstractVector{<:Node}, parent_node::Node)
 	# all the node that are child of the node
 	# TODO Should remove there relationship as well??
 	# TODO Will GC take care?
-    for (idx, node) in nv
-		if is_child(parnet_node, node)
-			deleteat!(nv, idx)
+	to_be_removed = Int[]
+    for (idx, node) in enumerate(nv)
+		if is_child(parent_node, node) && parent_node != node
+			push!(to_be_removed, idx)
 		end
 	end
+	deleteat!(nv, to_be_removed)
 end
 
 function not_tolerable(phases::AbstractVector{<:Phase},
@@ -84,7 +86,7 @@ function not_tolerable(phases::AbstractVector{<:Phase},
 	# Only count extra peaks that showed up in reconstruction
     recon = zeros(size(x))
 	for phase in phases
-		recon += (phase)(x)
+		recon += (phase).(x)
 	end
 	residual = norm(max.(recon-y, 0))
 	return residual > tol
