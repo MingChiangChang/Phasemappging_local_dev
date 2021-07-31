@@ -52,21 +52,21 @@ function dft(t::Tree)
 	# the D-F order
 end
 
-function search(t::Tree, traversal_func::Function, x::AbstractVector,
+function search!(t::Tree, traversal_func::Function, x::AbstractVector,
 	          y::AbstractVector, std_noise::Real, mean::AbstractVector,
 			  std::AbstractVector, maxiter=32, regularization::Bool=true,
-			  tol::Real=1e-3)
+			  tol::Real=1e-3) # not_tolerable/prunable)
     node_order = traversal_func(t)
 	while !isempty(node_order)
 	    node = popfirst!(node_order)
         phases = optimize!(node.current_phases, x, y, std_noise, mean, std,
-		                maxiter, regularization)
-		if not_tolerable(phases, x, y)
-            remove_child(node_order, node)
+		                maxiter=maxiter, regularization=regularization)
+		if not_tolerable(phases, x, y, tol)
+            remove_child!(node_order, node)
 		end
     end
 end
-
+# subtree
 function remove_child!(nv::AbstractVector{<:Node}, parent_node::Node)
     # Given a vector of node and a node, remove
 	# all the node that are child of the node
