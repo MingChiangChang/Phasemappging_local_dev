@@ -60,6 +60,7 @@ function optimize!(θ::AbstractMatrix, phases::AbstractVector{<:Phase},
 			@. r -= P(x)
 		end
 		r ./= sqrt(2) * std_noise # from Gaussian observation likelihood
+		println(typeof(r))
 		return r
 	end
 	function residual!(r::AbstractVector, θ::AbstractVector)
